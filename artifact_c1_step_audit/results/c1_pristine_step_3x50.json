@@ -1,0 +1,10 @@
+{
+ "experiment": "C1 PRISTINE published step() closed-loop, transfer_cube (evaluate_step_fs.py PRISTINE=1, upstream HEAD 9bea607, version_6)",
+ "protocol": "3 seeds x 50 rollouts; a broken-policy rollout that drives MuJoCo into an invalid physics state (mjWARN_BADQACC) is counted as a 0-reward failure",
+ "per_seed": {"0": {"success": 1, "n": 50, "rate": 0.02},
+              "1": {"success": 0, "n": 50, "rate": 0.0},
+              "2": {"success": 0, "n": 50, "rate": 0.0}},
+ "pooled": {"success": 1, "n": 150, "rate": 0.0067, "wilson95": [0.0012, 0.0368]},
+ "physics_invalid_rollouts": 3,
+ "note": "The published step() is non-functional: 1/150 = 0.7% (one fluke transfer where garbage actions happened to move the cube), vs the fixed step() 96.7%. On 3 poses the garbage actions drove the simulator into an invalid state. Per-seed JSON: results_step_pristine_seed{0,1,2}.json."
+}

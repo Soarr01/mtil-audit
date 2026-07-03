@@ -1,0 +1,198 @@
+diff --git a/test/mamba_policy_par.py b/test/mamba_policy_par.py
+index 81ab9fc..730a5ac 100644
+--- a/test/mamba_policy_par.py
++++ b/test/mamba_policy_par.py
+@@ -436,7 +436,7 @@ class CrossModalAttention(nn.Module):
+         super().__init__()
+         # 层次化投影 + 非线性增强
+         self.proj_lowdim = nn.Sequential(
+-            nn.Linear(14, 128),
++            nn.Linear(lowdim_dim, 128),   # was hardcoded 14 (ALOHA); now configurable (LIBERO lowdim_dim=8)
+             nn.GELU(),
+             nn.Linear(128, 512),
+             nn.Dropout(0.2),
+@@ -569,7 +569,7 @@ class MambaPolicy(nn.Module):
+         )
+         # 输入特征的拼接和投影
+         # self.in_dim = embed_dim + lowdim_dim
+-        self.cross_attn = CrossModalAttention(d_model)
++        self.cross_attn = CrossModalAttention(d_model, lowdim_dim=self.lowdim_dim)
+         self.in_dim = embed_dim * len(self.camera_names)
+         # 跨相机交叉注意力模块
+         self.num_cameras = len(camera_names)
+@@ -705,20 +705,22 @@ class MambaPolicy(nn.Module):
+                 y_t = y_t.squeeze(1)
+                 new_conv_st, new_ssm_st = conv_st, ssm_st
+ 
+-            hidden_out = y_t + residual
+-
+-            # mlp
++            # FIX (verified fp32-exact by test/diag5.py, 2026-06-19): replicate the canonical
++            # mamba_ssm Block.forward two-stream (hidden_states, residual) semantics. The old code
++            # collapsed both streams (hidden_out = mlp(...) + hidden_out; hidden = residual = hidden_out),
++            # which double-counts the residual across blocks => step() diverged ~18 from forward_sequence.
++            # NOTE: this is the test/ copy that the eval scripts actually import (train/ has its own copy).
+             if blk.mlp is not None:
+-                r2 = blk.norm2(hidden_out.to(dtype=blk.norm2.weight.dtype))
+-                hidden_out = blk.mlp(r2) + hidden_out
++                residual = y_t + residual                                               # r2 = mixer_out + r1
++                hidden = blk.mlp(blk.norm2(residual.to(dtype=blk.norm2.weight.dtype)))   # mlp_out, kept SEPARATE from residual
++            else:
++                hidden = y_t                                                            # no mlp: residual stays r1
+ 
+             new_states.append((new_conv_st, new_ssm_st))
+-            hidden = hidden_out
+-            residual = hidden_out
+ 
+             # d) out => action
+         action_flat = self.out_proj(hidden)# => [B, 16×14=224]
+-        action_t = action_flat.view(-1, self.future_steps, 14)  # => [B,16,14]
++        action_t = action_flat.view(-1, self.future_steps, self.action_dim)  # configurable action_dim (ALOHA=14, LIBERO=7)
+         return action_t, new_states
+ 
+     def process_vision_chunk(self, dino_feats):
+@@ -736,17 +738,19 @@ class MambaPolicy(nn.Module):
+             # Fallback or error
+             return self.spatial_adapter(dino_feats)
+ 
+-    def forward_sequence(self, obs_lowdim, cam_features_seq):
++    def forward_sequence(self, obs_lowdim, cam_features_seq, return_hidden=False):
+         """
+         全序列并行前向传播。
+-        
++
+         Args:
+             obs_lowdim: [B, L, 14]
+-            cam_features_seq: Dict {cam_name: [B, L, embed_dim]} 
++            cam_features_seq: Dict {cam_name: [B, L, embed_dim]}
+                               注意：这里输入的是已经过 Adapter 的特征序列！
+-        
++            return_hidden: if True, also return the per-frame Mamba hidden state [B,L,d_model]
++                           (delayed-cue aux cue-loss; default off, eval unaffected).
++
+         Returns:
+-            pred_actions: [B, L, future_steps, action_dim]
++            pred_actions: [B, L, future_steps, action_dim]   (+ hidden [B,L,d_model] if return_hidden)
+         """
+         B, L, _ = obs_lowdim.shape
+         device = obs_lowdim.device
+@@ -800,5 +804,7 @@ class MambaPolicy(nn.Module):
+         # 7. Output Projection
+         actions_flat = self.out_proj(x) # [B, L, future*act]
+         pred_actions = actions_flat.view(B, L, self.future_steps, self.action_dim)
+-        
++
++        if return_hidden:
++            return pred_actions, x   # x = per-frame Mamba hidden state [B,L,d_model] (aux cue-head)
+         return pred_actions
+\ No newline at end of file
+diff --git a/train/mamba_policy_par.py b/train/mamba_policy_par.py
+index 81ab9fc..bae2edc 100644
+--- a/train/mamba_policy_par.py
++++ b/train/mamba_policy_par.py
+@@ -2,6 +2,7 @@ import math
+ import torch
+ import torch.nn as nn
+ import torch.nn.functional as F
++import torch.utils.checkpoint as _gradckpt
+ from einops import rearrange, repeat
+ 
+ try:
+@@ -436,7 +437,7 @@ class CrossModalAttention(nn.Module):
+         super().__init__()
+         # 层次化投影 + 非线性增强
+         self.proj_lowdim = nn.Sequential(
+-            nn.Linear(14, 128),
++            nn.Linear(lowdim_dim, 128),   # was hardcoded 14 (ALOHA); now configurable (LIBERO lowdim_dim=8)
+             nn.GELU(),
+             nn.Linear(128, 512),
+             nn.Dropout(0.2),
+@@ -569,7 +570,7 @@ class MambaPolicy(nn.Module):
+         )
+         # 输入特征的拼接和投影
+         # self.in_dim = embed_dim + lowdim_dim
+-        self.cross_attn = CrossModalAttention(d_model)
++        self.cross_attn = CrossModalAttention(d_model, lowdim_dim=self.lowdim_dim)
+         self.in_dim = embed_dim * len(self.camera_names)
+         # 跨相机交叉注意力模块
+         self.num_cameras = len(camera_names)
+@@ -705,20 +706,21 @@ class MambaPolicy(nn.Module):
+                 y_t = y_t.squeeze(1)
+                 new_conv_st, new_ssm_st = conv_st, ssm_st
+ 
+-            hidden_out = y_t + residual
+-
+-            # mlp
++            # FIX (verified fp32-exact by test/diag5.py, 2026-06-19): replicate the canonical
++            # mamba_ssm Block.forward two-stream (hidden_states, residual) semantics. The old code
++            # collapsed both streams (hidden_out = mlp(...) + hidden_out; hidden = residual = hidden_out),
++            # which double-counts the residual across blocks => step() diverged ~60 from forward_sequence.
+             if blk.mlp is not None:
+-                r2 = blk.norm2(hidden_out.to(dtype=blk.norm2.weight.dtype))
+-                hidden_out = blk.mlp(r2) + hidden_out
++                residual = y_t + residual                                               # r2 = mixer_out + r1
++                hidden = blk.mlp(blk.norm2(residual.to(dtype=blk.norm2.weight.dtype)))   # mlp_out, kept SEPARATE from residual
++            else:
++                hidden = y_t                                                            # no mlp: residual stays r1
+ 
+             new_states.append((new_conv_st, new_ssm_st))
+-            hidden = hidden_out
+-            residual = hidden_out
+ 
+             # d) out => action
+         action_flat = self.out_proj(hidden)# => [B, 16×14=224]
+-        action_t = action_flat.view(-1, self.future_steps, 14)  # => [B,16,14]
++        action_t = action_flat.view(-1, self.future_steps, self.action_dim)  # configurable action_dim (ALOHA=14, LIBERO=7)
+         return action_t, new_states
+ 
+     def process_vision_chunk(self, dino_feats):
+@@ -736,17 +738,20 @@ class MambaPolicy(nn.Module):
+             # Fallback or error
+             return self.spatial_adapter(dino_feats)
+ 
+-    def forward_sequence(self, obs_lowdim, cam_features_seq):
++    def forward_sequence(self, obs_lowdim, cam_features_seq, return_hidden=False):
+         """
+         全序列并行前向传播。
+-        
++
+         Args:
+             obs_lowdim: [B, L, 14]
+-            cam_features_seq: Dict {cam_name: [B, L, embed_dim]} 
++            cam_features_seq: Dict {cam_name: [B, L, embed_dim]}
+                               注意：这里输入的是已经过 Adapter 的特征序列！
+-        
++            return_hidden: if True, also return the per-frame Mamba hidden state [B,L,d_model]
++                           (used by the delayed-cue auxiliary cue-prediction loss; default off,
++                            so all existing callers/eval are unaffected).
++
+         Returns:
+-            pred_actions: [B, L, future_steps, action_dim]
++            pred_actions: [B, L, future_steps, action_dim]   (+ hidden [B,L,d_model] if return_hidden)
+         """
+         B, L, _ = obs_lowdim.shape
+         device = obs_lowdim.device
+@@ -794,11 +799,19 @@ class MambaPolicy(nn.Module):
+         # 6. Mamba Blocks (Sequence Processing)
+         # Mamba 会自动处理这里的序列因果性
+         residual = None
++        # Gradient checkpointing (gated by config.use_grad_ckpt, default off) — chi bat khi training,
++        # de fit model full-history (T=400) tren card 11GB; cung ket qua, chi cham hon ~10-20%.
++        use_ckpt = getattr(self.mamba_cfg, 'use_grad_ckpt', False) and self.training
+         for blk in self.blocks:
+-            x, residual = blk(x, residual)
+-            
++            if use_ckpt:
++                x, residual = _gradckpt.checkpoint(blk, x, residual, use_reentrant=False)
++            else:
++                x, residual = blk(x, residual)
++
+         # 7. Output Projection
+         actions_flat = self.out_proj(x) # [B, L, future*act]
+         pred_actions = actions_flat.view(B, L, self.future_steps, self.action_dim)
+-        
++
++        if return_hidden:
++            return pred_actions, x   # x = per-frame Mamba hidden state [B,L,d_model] (aux cue-head)
+         return pred_actions
+\ No newline at end of file

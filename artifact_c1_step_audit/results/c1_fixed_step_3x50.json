@@ -1,0 +1,10 @@
+{
+ "experiment": "C1 FIXED step() closed-loop, transfer_cube (evaluate_step_fs.py, fixed O(T) recurrent step, version_6)",
+ "protocol": "3 seeds x 50 rollouts, pooled Wilson-95%",
+ "per_seed": {"0": {"success": 48, "n": 50, "rate": 0.96, "avg_return": 607.30},
+              "1": {"success": 49, "n": 50, "rate": 0.98, "avg_return": 624.08},
+              "2": {"success": 48, "n": 50, "rate": 0.96, "avg_return": 616.08}},
+ "pooled": {"success": 145, "n": 150, "rate": 0.967, "wilson95": [0.924, 0.986]},
+ "source_log": "train/c1_seeded2.log",
+ "note": "The fixed O(T) step() rollout matches the forward_sequence reproduction (97.3%) within CI -> the corrected recurrent controller is a faithful O(T) realization of the trained policy."
+}

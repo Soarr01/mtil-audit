@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.log
+*.pid
+nohup.out
+lightning_logs/
+bundle/
+*.zip
+*.ckpt
+*.mp4

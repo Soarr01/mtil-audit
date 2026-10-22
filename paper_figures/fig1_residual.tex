@@ -1,0 +1,59 @@
+% Fig. 1 redrawn with the diagram-design rules (architecture-delta grammar adapted to one column):
+% two synchronized snapshots with identical coordinates, a change ledger, orthogonal connectors with
+% rounded elbows, ports away from corners, muted arrows, one accent for the changed part only.
+\definecolor{ddink}{HTML}{2D3142}\definecolor{ddmuted}{HTML}{4F5D75}\definecolor{ddsoft}{HTML}{5A6580}
+\definecolor{ddaccent}{HTML}{BF4520}\definecolor{ddrule}{HTML}{BFC0C0}
+\begin{tikzpicture}[x=1cm, y=1cm, >={Stealth[length=1.4mm, width=1.1mm]},
+  conn/.style={draw=ddmuted, line width=0.55pt, rounded corners=2.2pt},
+  hot/.style={draw=ddaccent, line width=0.75pt, rounded corners=2.2pt},
+  box/.style={draw=ddink, line width=0.5pt, rounded corners=1.6pt, fill=white, minimum width=1.7cm, minimum height=0.8cm,
+              align=center, inner sep=1.5pt, font=\sffamily\scriptsize\bfseries, text=ddink},
+  sum/.style={draw=ddink, line width=0.5pt, circle, fill=white, minimum size=3.3mm, inner sep=0pt, font=\sffamily\scriptsize},
+  hotsum/.style={sum, draw=ddaccent, line width=0.8pt, fill=ddaccent!8, text=ddaccent},
+  io/.style={font=\scriptsize, text=ddink},
+  eyebrow/.style={font=\sffamily\scriptsize\bfseries, text=ddsoft, anchor=west},
+  sub/.style={font=\ttfamily\tiny, text=ddsoft}]
+% ---------------------------------------------------------------- one snapshot (#1 = y offset)
+\newcommand{\ddsnapshot}[2]{%
+  \begin{scope}[yshift=#1]
+  \node[eyebrow] at (-0.1,1.55) {#2};
+  \node[io] (h) at (0,0.9) {$h$};
+  \node[io] (r) at (0,0) {$r$};
+  \node[sum] (a1) at (0.8,0) {$+$};
+  \node[box] (mix) at (2.35,0.9) {mixer\\[-1pt]{\mdseries\scriptsize\textcolor{ddsoft}{LN, SSM}}};
+  \node[sum] (a2) at (3.75,0) {$+$};
+  \node[box] (mlp) at (5.1,0.9) {MLP\\[-1pt]{\mdseries\scriptsize\textcolor{ddsoft}{LN\textsubscript{2}, MLP}}};
+  \draw[conn,->] (h.east) -| (a1.north);
+  \draw[conn,->] (r.east) -- (a1.west);
+  \draw[conn,->] (a1.east) -- (a2.west);
+  \draw[conn,->] (1.95,0) -- (1.95,0.9-0.37);
+  \draw[conn,->] (mix.east) -| (a2.north);
+  \draw[conn,->] (4.7,0) -- (4.7,0.9-0.37);
+  \fill[ddmuted] (1.95,0) circle (0.75pt); \fill[ddmuted] (4.7,0) circle (0.75pt);
+  \end{scope}}
+% ---------------------------------------------------------------- (a) canonical
+\ddsnapshot{0cm}{(a) CANONICAL MAMBA BLOCK}
+\node[io] (ho) at (7.6,0.9) {$h'$};
+\node[io] (ro) at (7.6,0) {$r'$};
+\draw[conn,->] (mlp.east) -- (ho.west);
+\draw[conn,->] (a2.east) -- (ro.west);
+% ---------------------------------------------------------------- (b) released step()
+\ddsnapshot{-2.25cm}{(b) RELEASED \texttt{step()}}
+\begin{scope}[yshift=-2.25cm]
+\node[io, text=ddaccent] (ho) at (7.6,0.9) {$h'$};
+\node[io, text=ddaccent] (ro) at (7.6,0) {$r'$};
+\node[hotsum] (a3) at (6.35,0) {$+$};
+\draw[conn,->] (a2.east) -- (a3.west);
+\node[font=\scriptsize, text=ddink, fill=white, inner sep=1pt] at (5.55,-0.2) {$x$};
+\draw[hot,->] (mlp.east) -| (a3.north);
+\draw[hot,->] (a3.east) -- (ro.west);
+\draw[hot,->] (6.95,0) |- (ho.west);
+\fill[ddaccent] (6.95,0) circle (0.85pt);
+\end{scope}
+% ---------------------------------------------------------------- change ledger (bottom strip)
+\draw[ddrule, line width=0.4pt] (-0.1,-2.85) -- (7.75,-2.85);
+\node[eyebrow] at (-0.1,-3.08) {CHANGES};
+\node[font=\sffamily\scriptsize, text=ddink, anchor=west, align=left] at (1.45,-3.22)
+  {\textcolor{ddaccent}{\textbf{ADDED}}\ \ sum after the MLP: $s=x+\mathrm{MLP}(\mathrm{LN}_2(x))$\\[1pt]
+   \textcolor{ddaccent}{\textbf{REWIRED}}\ \ $h'$, $r'$ both carry $s$; next block: $s+s=2s$};
+\end{tikzpicture}

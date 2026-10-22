@@ -1,0 +1,56 @@
+\begin{tikzpicture}[execute at begin picture=\sansmath]
+\begin{axis}[width=0.86\columnwidth, height=4.6cm, scale only axis=false,
+  xmin=0, xmax=100, ymin=0.45, ymax=5.55, axis line style={draw=none},
+  xtick={0,20,40,60,80,100}, ytick={1,2,3,4,5},
+  yticklabels={{$k{=}1$},{$k{=}4$},{$k{=}16$},{$k{=}64$ (1 seed)},{full history}},
+  tick style={draw=none}, xmajorgrids, grid style={ddink!10, line width=0.4pt},
+  ticklabel style={font=\sffamily\scriptsize, text=ddmuted},
+  yticklabel style={font=\sffamily\scriptsize, text=ddink},
+  xlabel={success over 150 rollouts per training seed (\%)}, xlabel style={font=\sffamily\scriptsize, text=ddmuted, yshift=3pt},
+  clip=false]
+\draw[ddink!35, line width=0.5pt] (axis cs:0,0.45) -- (axis cs:0,5.55);
+\draw[ddink!55, line width=0.6pt] (axis cs:52.44,1) -- (axis cs:96.00,1);
+\node[font=\sffamily\scriptsize\bfseries, text=ddaccent, anchor=east] at (axis cs:37.44,1) {\textminus43.6};
+\fill[ddaccent!75] (axis cs:49.33,0.780) circle (1.0pt);
+\fill[ddaccent!75] (axis cs:51.33,0.780) circle (1.0pt);
+\fill[ddaccent!75] (axis cs:56.67,0.780) circle (1.0pt);
+\draw[ddink, line width=0.5pt, fill=ddaccent] (axis cs:52.44,1) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, left=3.5pt] at (axis cs:52.44,1) {52.4};
+\fill[ddmuted!80] (axis cs:95.33,1.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:95.33,1.330) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:97.33,1.220) circle (1.0pt);
+\draw[ddmuted, line width=0.9pt, fill=white] (axis cs:96.00,1) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, right=4.5pt] at (axis cs:96.00,1) {96.0};
+\fill[ddmuted!80] (axis cs:86.67,2.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:90.67,2.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:94.00,2.220) circle (1.0pt);
+\draw[ddmuted, line width=0.9pt, fill=white] (axis cs:90.44,2) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, right=4.5pt] at (axis cs:90.44,2) {90.4};
+\fill[ddmuted!80] (axis cs:86.67,3.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:90.67,3.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:97.33,3.220) circle (1.0pt);
+\draw[ddmuted, line width=0.9pt, fill=white] (axis cs:91.56,3) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, right=4.5pt] at (axis cs:91.56,3) {91.6};
+\fill[ddmuted!80] (axis cs:99.33,4.220) circle (1.0pt);
+\draw[ddmuted, line width=0.9pt, fill=white] (axis cs:99.33,4) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, right=4.5pt] at (axis cs:99.33,4) {99.3};
+\draw[ddink!55, line width=0.6pt] (axis cs:88.22,5) -- (axis cs:98.89,5);
+\node[font=\sffamily\scriptsize\bfseries, text=ddaccent, anchor=east] at (axis cs:73.22,5) {\textminus10.7};
+\fill[ddaccent!75] (axis cs:81.33,4.780) circle (1.0pt);
+\fill[ddaccent!75] (axis cs:90.67,4.780) circle (1.0pt);
+\fill[ddaccent!75] (axis cs:92.67,4.780) circle (1.0pt);
+\draw[ddink, line width=0.5pt, fill=ddaccent] (axis cs:88.22,5) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, left=3.5pt] at (axis cs:88.22,5) {88.2};
+\fill[ddmuted!80] (axis cs:98.67,5.220) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:98.67,5.330) circle (1.0pt);
+\fill[ddmuted!80] (axis cs:99.33,5.440) circle (1.0pt);
+\draw[ddmuted, line width=0.9pt, fill=white] (axis cs:98.89,5) circle (2.1pt);
+\node[font=\sffamily\scriptsize, text=ddmuted, right=4.5pt] at (axis cs:98.89,5) {98.9};
+\end{axis}
+% legend: horizontal strip under the plot
+\begin{scope}[shift={(0,-1.1)}, font=\sffamily\scriptsize, text=ddmuted]
+\draw[ddmuted, line width=0.9pt, fill=white] (0.15,0) circle (2.1pt); \node[anchor=west] at (0.28,0) {with TE (mean)};
+\draw[ddink, line width=0.5pt, fill=ddaccent] (2.3,0) circle (2.1pt); \node[anchor=west] at (2.43,0) {without TE (mean)};
+\fill[ddmuted!80] (4.75,0.06) circle (1.0pt); \fill[ddaccent!75] (4.85,-0.06) circle (1.0pt); \node[anchor=west] at (4.95,0) {seeds};
+\end{scope}
+\end{tikzpicture}

@@ -1,0 +1,37 @@
+\begin{tikzpicture}[execute at begin picture=\sansmath]
+\begin{axis}[width=0.43\textwidth, height=4.1cm, xmode=log, log basis x=2, xmin=1, xmax=16384,
+  xtick={1,8,64,512,4096,16384}, xticklabels={1,8,64,512,4k,16k}, axis line style={draw=none}, tick style={draw=none},
+  ymajorgrids, grid style={ddink!10, line width=0.4pt}, ticklabel style={font=\sffamily\scriptsize, text=ddmuted},
+  xlabel={history length $t$ (frames)}, label style={font=\sffamily\scriptsize, text=ddmuted}, clip=false, name=a, ymin=0, ymax=200, ytick={0,50,100,150,200}, ylabel={ms per tick}, ylabel style={yshift=-4pt}]
+\draw[ddink!35, line width=0.5pt] (axis cs:1,0) -- (axis cs:16384,0);
+\draw[ddink!25, line width=0.5pt, dashed] (axis cs:400,0) -- (axis cs:400,200);
+\node[font=\sffamily\scriptsize, text=ddmuted, fill=white, inner sep=1pt, anchor=south] at (axis cs:400,203) {benchmark $T{=}400$};
+\draw[ddmuted!70, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt] (axis cs:1,130.26) -- (axis cs:16384,130.26);
+\node[font=\sffamily\scriptsize, text=ddmuted, anchor=west] at (axis cs:16384,130.26) {ViT-L/14 130.3};
+\draw[ddmuted!70, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt] (axis cs:1,47.42) -- (axis cs:16384,47.42);
+\node[font=\sffamily\scriptsize, text=ddmuted, anchor=west] at (axis cs:16384,47.42) {ViT-B/14 47.4};
+\draw[ddmuted!70, line width=0.5pt, dash pattern=on 1.5pt off 1.5pt] (axis cs:1,21.48) -- (axis cs:16384,21.48);
+\node[font=\sffamily\scriptsize, text=ddmuted, anchor=west] at (axis cs:16384,26.48) {ViT-S/14 21.5};
+\addplot[ddink, line width=0.7pt, dashed, domain=1:16384, samples=2] {8.216};
+\node[font=\sffamily\scriptsize, text=ddink, anchor=west] at (axis cs:16384,4.22) {recurrent 8.2};
+\addplot[ddaccent, line width=1.1pt, mark=*, mark size=1.3pt] coordinates {(1,11.3967) (64,11.6317) (256,11.7566) (400,12.1181) (512,12.1267) (1024,14.6578) (2048,26.2011) (4096,48.6276) (8192,93.1462) (16384,178.2854)};
+\node[font=\sffamily\scriptsize, text=ddaccent, anchor=west] at (axis cs:16384,178.29) {parallel scan 178};
+\node[font=\sffamily\scriptsize\bfseries, text=ddsoft, anchor=south west] at (rel axis cs:-0.12,1.13) {(a) SEQUENCE-MODEL COST VS.\ HISTORY};
+\end{axis}
+\begin{axis}[width=0.43\textwidth, height=4.1cm, xmode=log, log basis x=2, xmin=1, xmax=16384,
+  xtick={1,8,64,512,4096,16384}, xticklabels={1,8,64,512,4k,16k}, axis line style={draw=none}, tick style={draw=none},
+  ymajorgrids, grid style={ddink!10, line width=0.4pt}, ticklabel style={font=\sffamily\scriptsize, text=ddmuted},
+  xlabel={history length $t$ (frames)}, label style={font=\sffamily\scriptsize, text=ddmuted}, clip=false, at={(a.east)}, anchor=west, xshift=2.4cm, ymin=0.9, ymax=7, ytick={1,2,3,4,5,6,7}, yticklabels={1$\times$,2$\times$,3$\times$,4$\times$,5$\times$,6$\times$,7$\times$}]
+\draw[ddink!35, line width=0.5pt] (axis cs:1,1) -- (axis cs:16384,1);
+\draw[ddink!25, line width=0.5pt, dashed] (axis cs:400,0.9) -- (axis cs:400,7);
+\addplot[ddink!62, line width=0.7pt] coordinates {(1,1.1071) (64,1.1150) (256,1.1192) (400,1.1314) (512,1.1317) (1024,1.2169) (2048,1.6056) (4096,2.3607) (8192,3.8597) (16384,6.7265)};
+\node[font=\sffamily\scriptsize, text=ddink, anchor=west] at (axis cs:16384,6.726) {ViT-S/14 6.7$\times$};
+\addplot[ddink!80, line width=0.7pt] coordinates {(1,1.0572) (64,1.0614) (256,1.0636) (400,1.0701) (512,1.0703) (1024,1.1158) (2048,1.3233) (4096,1.7264) (8192,2.5267) (16384,4.0571)};
+\node[font=\sffamily\scriptsize, text=ddink, anchor=west] at (axis cs:16384,4.057) {ViT-B/14 4.1$\times$};
+\addplot[ddaccent, line width=1.1pt, mark=*, mark size=1.3pt] coordinates {(1,1.0230) (64,1.0247) (256,1.0256) (400,1.0282) (512,1.0282) (1024,1.0465) (2048,1.1299) (4096,1.2918) (8192,1.6133) (16384,2.2281)};
+\node[font=\sffamily\scriptsize, text=ddaccent, anchor=west] at (axis cs:16384,2.228) {ViT-L/14 (MTIL) 2.2$\times$};
+\addplot[only marks, mark=diamond*, mark size=2.4pt, mark options={draw=ddink, fill=white, line width=0.6pt}] coordinates {(400,1.0453)};
+\node[font=\sffamily\scriptsize, text=ddink, fill=white, inner sep=1pt, anchor=south east, align=right] at (axis cs:330,1.6) {rollout mean (AMP)\\$T{=}400$: 1.045$\times$};
+\node[font=\sffamily\scriptsize\bfseries, text=ddsoft, anchor=south west] at (rel axis cs:-0.12,1.13) {(b) COMPOSED SPEEDUP OF RECURRENCE};
+\end{axis}
+\end{tikzpicture}

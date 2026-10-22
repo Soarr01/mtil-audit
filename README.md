@@ -49,6 +49,10 @@ The ~4.6 GB checkpoint bundle (weights, scaler, one episode + cached features, S
 Zenodo: **[10.5281/zenodo.21154106](https://doi.org/10.5281/zenodo.21154106)**. Point
 `ARTIFACT_ROOT` at the unpacked bundle (see the artifact README).
 
+Version 2.0.0 of the Zenodo record adds this repository's v2.0.0 release (code + `results/ral2026/` run records):
+**[10.5281/zenodo.23551860](https://doi.org/10.5281/zenodo.23551860)**; the concept DOI
+[10.5281/zenodo.21154105](https://doi.org/10.5281/zenodo.21154105) always resolves to the latest version.
+
 ## Provenance
 
 The audited upstream is `github.com/yulinzhouZYL/MTIL` at HEAD `9bea607` (byte-identical clone;

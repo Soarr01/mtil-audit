@@ -1,0 +1,5 @@
+mamba-par-epoch=120-val_epoch_loss=0.0020.ckpt
+mamba-par-epoch=123-val_epoch_loss=0.0020.ckpt
+mamba-par-epoch=127-val_epoch_loss=0.0021.ckpt
+mamba-par-epoch=133-val_epoch_loss=0.0021.ckpt
+mamba-par-epoch=142-val_epoch_loss=0.0021.ckpt

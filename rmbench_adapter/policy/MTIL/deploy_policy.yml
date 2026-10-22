@@ -1,0 +1,8 @@
+# MTIL (served from the ssm_vla env by MTIL/test/rmbench_policy_server.py)
+policy_name: MTIL
+task_name: null
+task_config: null
+ckpt_setting: null
+seed: null
+instruction_type: unseen
+server_port: 6010

@@ -1,0 +1,14 @@
+# tag|MiB needed|shm cache|feature root|train_c3 args      (priority order; edited live, re-read every loop)
+win_k64_w4_s42_e150|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 64 --w 4 --seed 42 --epochs 150
+win_k1_w256_s1|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 1 --w 256 --micro 16 --seed 1
+win_k64_w16_s42_e150|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 64 --w 16 --micro 4 --seed 42 --epochs 150
+win_k16_w4_s42|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 16 --w 4 --seed 42
+win_k4_w64_s1|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 4 --w 64 --micro 16 --seed 1
+win_k1_w256_s2|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 1 --w 256 --micro 16 --seed 2
+win_k4_w64_s2|14000|vitl14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat|--mode win --k 4 --w 64 --micro 16 --seed 2
+vits14_full_s42|16000|vits14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat_vits14|--mode full --seed 42 --enc vits14
+vitb14_full_s42|16000|vitb14|/data/nas07_new/PersonalData/phuocthien/mtil_data/transfer_cube_feat_vitb14|--mode full --seed 42 --enc vitb14
+rmbench_put_back_block_full_s1|17000|rmbench_put_back_block|/data/nas07_new/PersonalData/phuocthien/mtil_data/rmbench_put_back_block_feat|--task rmbench_put_back_block --mode full --seed 1
+rmbench_put_back_block_win_k16_w16_s1|14000|rmbench_put_back_block|/data/nas07_new/PersonalData/phuocthien/mtil_data/rmbench_put_back_block_feat|--task rmbench_put_back_block --mode win --k 16 --w 16 --seed 1
+rmbench_put_back_block_win_k16_w16_s42_e150_fv|15000|rmbench_put_back_block|/data/nas07_new/PersonalData/phuocthien/mtil_data/rmbench_put_back_block_feat|--task rmbench_put_back_block --mode win --k 16 --w 16 --seed 42 --epochs 150 --fixed_val
+rmbench_put_back_block_win_k16_w16_s1_e150_fv|15000|rmbench_put_back_block|/data/nas07_new/PersonalData/phuocthien/mtil_data/rmbench_put_back_block_feat|--task rmbench_put_back_block --mode win --k 16 --w 16 --seed 1 --epochs 150 --fixed_val

@@ -19,6 +19,20 @@ TIER 0/1/2 reproduction guide (TIER 0 needs no GPU and runs in under a minute).
 - **C3** — full history is not necessary for high success on the headline benchmark
   (k=16-trained policy: 90.0%, Wilson [84.2, 93.8]).
 
+## 2026 additions (RA-L version: "Auditing Full-History Robot Policies: An MTIL Case Study")
+
+- **Context x execution** on cube transfer with windowed-trained controls and three training seeds
+  (`train/train_c3.py`, `test/evaluate_fs_windowed.py`, `test/evaluate_step_fs.py`; `NO_ENSEMBLE=1`
+  disables temporal ensembling).
+- **RMBench Put Back Block** full-history vs 16-frame controls, incl. 150-epoch fixed-validation controls
+  (`train/rmbench_convert.py`, `test/rmbench_policy_server.py`, `test/rmbench_eval.sh`, `rmbench_adapter/`
+  to drop into an RMBench checkout).
+- **Deployment cost**: direct rollout stopwatch (`test/time_rollout.py`), horizon/encoder profile
+  (`test/profile_horizon.py`), lighter encoders (`test/mamba_policy_enc.py`, `test/enc_wrap.py`).
+- **Scan-versus-step checker** (`test/scan_step_equiv.py`), incl. the audited Chronos copies
+  (`test/third_party_audit/`, MIT).
+- **Run records** for all of the above: [`results/ral2026/`](results/ral2026/README.md).
+
 ## Layout
 
 | Path | Contents |

@@ -5,7 +5,7 @@ current frame = last in the window. Sweep k to see how rollout SUCCESS depends o
 k >= MAXT == full history (reproduces evaluate_fs.py). transfer_cube, version_6.
 Usage: evaluate_fs_windowed.py <N> <k_csv>   e.g.  evaluate_fs_windowed.py 10 1,16,99999
 """
-import os, glob, re, sys
+import os, json, glob, re, sys
 import matplotlib; matplotlib.use('Agg')
 import numpy as np, torch
 from einops import rearrange
@@ -24,13 +24,30 @@ lowdim_dict={'agl_1':1,'agl_2':1,'agl_3':1,'agl_4':1,'agl_5':1,'agl_6':1,
 config=MP.MambaConfig(); config.camera_names=['top']; config.embed_dim=2048; config.lowdim_dim=14
 config.d_model=2048; config.action_dim=14; config.sum_camera_feats=False; config.num_blocks=4
 scaler_path='/data/nas07_new/PersonalData/phuocthien/mtil_data/scaler_transfer.pth'
-ckpt=min(glob.glob(os.path.join(CKPT_DIR,'*val_epoch_loss=*.ckpt')),key=lambda f:float(re.search(r'val_epoch_loss=(\d+\.\d+)',f).group(1)))
-print('ckpt:',ckpt,'| rollouts:',NUM_ROLLOUTS,'| K_LIST:',K_LIST)
+# argv[3] may be a checkpoints dir (lowest ROUNDED val loss in filename) or an explicit .ckpt file
+def pick_ckpt(d):
+    """checkpoints dir -> lowest UNROUNDED val loss from the run's history.json (train_c3.py); filenames carry a
+    rounded loss, so the filename fallback can pick a tied, non-minimal checkpoint and is only used without history"""
+    files=glob.glob(os.path.join(d,'*val_epoch_loss=*.ckpt'))
+    h=os.path.join(os.path.dirname(os.path.normpath(d)),'history.json')
+    if os.path.exists(h):
+        H=json.load(open(h)); H=H if isinstance(H,list) else H.get('epochs',H)
+        best=min((e for e in H if e.get('val_epoch_loss') is not None),key=lambda e:e['val_epoch_loss'])['epoch']
+        m=[f for f in files if re.search(rf'epoch={best:02d}-',os.path.basename(f))]
+        if m: return m[0]
+    print('WARNING: selecting by the ROUNDED loss in checkpoint filenames (no usable history.json)',flush=True)
+    return min(files,key=lambda f:float(re.search(r'val_epoch_loss=(\d+\.\d+)',f).group(1)))
+ckpt=CKPT_DIR if CKPT_DIR.endswith('.ckpt') else pick_ckpt(CKPT_DIR)
+# NO_ENSEMBLE=1: execute only the first action of the CURRENT chunk (no ACT temporal aggregation) -> a k=1 policy is then truly memoryless
+NO_ENSEMBLE=os.environ.get('NO_ENSEMBLE','0')=='1'
+print('ckpt:',ckpt,'| rollouts:',NUM_ROLLOUTS,'| K_LIST:',K_LIST,'| NO_ENSEMBLE:',NO_ENSEMBLE)
 policy=MP.MambaPolicy(camera_names=config.camera_names,embed_dim=config.embed_dim,lowdim_dim=config.lowdim_dim,
   d_model=config.d_model,action_dim=config.action_dim,sum_camera_feats=config.sum_camera_feats,
   num_blocks=config.num_blocks,mamba_cfg=config).cuda().eval()
 sd=torch.load(ckpt,map_location='cuda:0')['state_dict']
-policy.load_state_dict({k.replace('policy.',''):v for k,v in sd.items() if k.startswith('policy.')},strict=False)
+miss,unexp=policy.load_state_dict({k.replace('policy.',''):v for k,v in sd.items() if k.startswith('policy.')},strict=False)
+# only the frozen DINOv2 (dropped from training ckpts, rebuilt from torch.hub) may be missing
+assert not unexp and all(k.startswith('shared_backbone.') for k in miss), (unexp, [k for k in miss if not k.startswith('shared_backbone.')])
 scaler=Scaler(lowdim_dict=lowdim_dict); scaler.load(scaler_path); scaler.cuda()
 
 def t_(a): return torch.from_numpy(np.array(a,dtype=np.float32)).cuda()
@@ -76,7 +93,8 @@ for K in K_LIST:
             ata[[tt], tt:tt+NQ]=denorm(chunk)
             cur=ata[:,tt]; pop=torch.all(cur!=0,dim=1); cur=cur[pop]
             w=np.exp(-0.01*np.arange(len(cur))); w=torch.from_numpy(w/w.sum()).float().cuda().unsqueeze(1)
-            ts=env.step((cur*w).sum(dim=0).cpu().numpy()); rewards.append(ts.reward)
+            act=denorm(chunk)[0,0] if NO_ENSEMBLE else (cur*w).sum(dim=0)
+            ts=env.step(act.cpu().numpy()); rewards.append(ts.reward)
         rewards=np.array([0 if r is None else r for r in rewards])
         hi=float(rewards.max()); returns.append(float(rewards.sum())); highest.append(hi)
         print(f'  [k={K}] Rollout {rid}: highest={hi} Success={hi==env_max_reward}', flush=True)

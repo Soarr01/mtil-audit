@@ -1,0 +1,5 @@
+mamba-win64-epoch=119-val_epoch_loss=0.0005.ckpt
+mamba-win64-epoch=120-val_epoch_loss=0.0006.ckpt
+mamba-win64-epoch=123-val_epoch_loss=0.0006.ckpt
+mamba-win64-epoch=127-val_epoch_loss=0.0006.ckpt
+mamba-win64-epoch=134-val_epoch_loss=0.0006.ckpt

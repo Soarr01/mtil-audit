@@ -1,0 +1,198 @@
+[
+ {
+  "epoch": 17,
+  "sec": 168.4,
+  "val_epoch_loss": 0.04141483083367348,
+  "train_loss": 0.02937045693397522,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 18,
+  "sec": 52.9,
+  "val_epoch_loss": 0.05191292241215706,
+  "train_loss": 0.006174357142299414,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 19,
+  "sec": 56.1,
+  "val_epoch_loss": 0.04150907322764397,
+  "train_loss": 0.02769973874092102,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 20,
+  "sec": 52.5,
+  "val_epoch_loss": 0.026702886447310448,
+  "train_loss": 0.007179253734648228,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 21,
+  "sec": 52.7,
+  "val_epoch_loss": 0.03865144029259682,
+  "train_loss": 0.02926354482769966,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 22,
+  "sec": 53.1,
+  "val_epoch_loss": 0.02468128874897957,
+  "train_loss": 0.01344334427267313,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 23,
+  "sec": 53.4,
+  "val_epoch_loss": 0.03773089870810509,
+  "train_loss": 0.01702977903187275,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 24,
+  "sec": 53.9,
+  "val_epoch_loss": 0.02335592359304428,
+  "train_loss": 0.01387257594615221,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 25,
+  "sec": 55.2,
+  "val_epoch_loss": 0.021300343796610832,
+  "train_loss": 0.013220449909567833,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 26,
+  "sec": 54.5,
+  "val_epoch_loss": 0.020041154697537422,
+  "train_loss": 0.008539869450032711,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 27,
+  "sec": 54.5,
+  "val_epoch_loss": 0.009701836854219437,
+  "train_loss": 0.00631325738504529,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 28,
+  "sec": 57.8,
+  "val_epoch_loss": 0.02084345556795597,
+  "train_loss": 0.020926106721162796,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 29,
+  "sec": 54.9,
+  "val_epoch_loss": 0.016844645142555237,
+  "train_loss": 0.0045438483357429504,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 30,
+  "sec": 55.1,
+  "val_epoch_loss": 0.022018203511834145,
+  "train_loss": 0.04842150956392288,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 31,
+  "sec": 55.3,
+  "val_epoch_loss": 0.013324260711669922,
+  "train_loss": 0.007117413450032473,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 32,
+  "sec": 55.9,
+  "val_epoch_loss": 0.018530337139964104,
+  "train_loss": 0.005055000074207783,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 33,
+  "sec": 56.3,
+  "val_epoch_loss": 0.007570687681436539,
+  "train_loss": 0.0051339296624064445,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 34,
+  "sec": 53.5,
+  "val_epoch_loss": 0.010868656449019909,
+  "train_loss": 0.016219785436987877,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 35,
+  "sec": 54.2,
+  "val_epoch_loss": 0.00870350282639265,
+  "train_loss": 0.0016980182845145464,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 36,
+  "sec": 54.1,
+  "val_epoch_loss": 0.012733039446175098,
+  "train_loss": 0.0022803526371717453,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 37,
+  "sec": 56.0,
+  "val_epoch_loss": 0.014515595510601997,
+  "train_loss": 0.006119714584201574,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 38,
+  "sec": 54.5,
+  "val_epoch_loss": 0.012988227419555187,
+  "train_loss": 0.010997558943927288,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 39,
+  "sec": 54.2,
+  "val_epoch_loss": 0.007566472049802542,
+  "train_loss": 0.0012457803823053837,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 40,
+  "sec": 54.5,
+  "val_epoch_loss": 0.009728933684527874,
+  "train_loss": 0.004210979677736759,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 41,
+  "sec": 54.5,
+  "val_epoch_loss": 0.009843721985816956,
+  "train_loss": 0.0014830018626525998,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 42,
+  "sec": 56.3,
+  "val_epoch_loss": 0.00847879983484745,
+  "train_loss": 0.01504154596477747,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 43,
+  "sec": 53.5,
+  "val_epoch_loss": 0.006889746990054846,
+  "train_loss": 0.027939721941947937,
+  "peak_mem_gb": 11.64
+ },
+ {
+  "epoch": 44,
+  "sec": 54.0,
+  "val_epoch_loss": 0.00836546253412962,
+  "train_loss": 0.006953654810786247,
+  "peak_mem_gb": 11.64
+ }
+]

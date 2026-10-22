@@ -1,0 +1,18 @@
+ckpt: /data/nas07_new/PersonalData/phuocthien/ssm_vla/MTIL/train/c3_runs/full_s2/checkpoints/mamba-par-epoch=132-val_epoch_loss=0.0007.ckpt | rollouts: 50 | seed: 0 | MODE=step() O(T) fp32
+Using cache found in /root/.cache/torch/hub/facebookresearch_dinov2_main
+/root/.cache/torch/hub/facebookresearch_dinov2_main/dinov2/layers/swiglu_ffn.py:51: UserWarning: xFormers is not available (SwiGLU)
+  warnings.warn("xFormers is not available (SwiGLU)")
+/root/.cache/torch/hub/facebookresearch_dinov2_main/dinov2/layers/attention.py:33: UserWarning: xFormers is not available (Attention)
+  warnings.warn("xFormers is not available (Attention)")
+/root/.cache/torch/hub/facebookresearch_dinov2_main/dinov2/layers/block.py:40: UserWarning: xFormers is not available (Block)
+  warnings.warn("xFormers is not available (Block)")
+/data/nas07_new/PersonalData/phuocthien/ssm_vla/MTIL/test/evaluate_step_fs.py:48: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  sd=torch.load(ckpt,map_location='cuda:0')['state_dict']
+miss(non-bb): [] | unexp: []
+/data/nas07_new/PersonalData/phuocthien/ssm_vla/MTIL/train/scaler_M.py:115: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.load_state_dict(torch.load(filepath, map_location='cpu'))
+Scaler 参数已从 /data/nas07_new/PersonalData/phuocthien/mtil_data/scaler_transfer.pth 加载
+Rollout 0: highest=4.0 max=4 Success=True
+Saved video to: /data/nas07_new/PersonalData/phuocthien/ssm_vla/MTIL/train/c3_runs/full_s2/eval_step/step0.mp4
+Rollout 1: highest=4.0 max=4 Success=True
+Saved video to: /data/nas07_new/PersonalData/phuocthien/ssm_vla/MTIL/train/c3_runs/full_s2/eval_step/step1.mp4

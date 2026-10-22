@@ -1,0 +1,5 @@
+mamba-win16-epoch=38-val_epoch_loss=0.0015.ckpt
+mamba-win16-epoch=39-val_epoch_loss=0.0017.ckpt
+mamba-win16-epoch=40-val_epoch_loss=0.0015.ckpt
+mamba-win16-epoch=41-val_epoch_loss=0.0013.ckpt
+mamba-win16-epoch=43-val_epoch_loss=0.0014.ckpt

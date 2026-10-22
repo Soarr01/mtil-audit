@@ -39,9 +39,10 @@ lowdim_dict={'agl_1':1,'agl_2':1,'agl_3':1,'agl_4':1,'agl_5':1,'agl_6':1,
 config=MP.MambaConfig(); config.camera_names=['top']; config.embed_dim=2048; config.lowdim_dim=14
 config.d_model=2048; config.action_dim=14; config.sum_camera_feats=False; config.num_blocks=4
 scaler_path=artpath('scaler_transfer.pth','/data/nas07_new/PersonalData/phuocthien/mtil_data/scaler_transfer.pth')
+NO_ENSEMBLE=os.environ.get('NO_ENSEMBLE','0')=='1'   # 1: no ACT temporal aggregation (matches evaluate_fs_windowed.py NO_ENSEMBLE)
 results_dir=os.environ.get('RESULTS_DIR', artpath('results','/data/nas07_new/PersonalData/phuocthien/mtil_data/eval_video')); os.makedirs(results_dir,exist_ok=True)
 ckpt = CKPT_ARG if CKPT_ARG.endswith('.ckpt') else min(glob.glob(os.path.join(CKPT_ARG,'*val_epoch_loss=*.ckpt')),key=lambda f:float(re.search(r'val_epoch_loss=(\d+\.\d+)',f).group(1)))
-print('ckpt:',ckpt,'| rollouts:',NUM_ROLLOUTS,'| seed:',SEED,'| MODE=step() O(T) fp32')
+print('ckpt:',ckpt,'| rollouts:',NUM_ROLLOUTS,'| seed:',SEED,'| MODE=step() O(T) fp32','| NO_ENSEMBLE:',os.environ.get('NO_ENSEMBLE','0')=='1')
 policy=MP.MambaPolicy(camera_names=config.camera_names,embed_dim=config.embed_dim,lowdim_dim=config.lowdim_dim,
   d_model=config.d_model,action_dim=config.action_dim,sum_camera_feats=config.sum_camera_feats,
   num_blocks=config.num_blocks,mamba_cfg=config).cuda().eval()
@@ -91,7 +92,7 @@ for rid in range(NUM_ROLLOUTS):
         ata[[tt], tt:tt+NQ]=chunk_dn
         cur=ata[:,tt]; pop=torch.all(cur!=0,dim=1); cur=cur[pop]
         w=np.exp(-0.01*np.arange(len(cur))); w=torch.from_numpy(w/w.sum()).float().cuda().unsqueeze(1)
-        target=(cur*w).sum(dim=0).cpu().numpy()
+        target=(chunk_dn[0,0] if NO_ENSEMBLE else (cur*w).sum(dim=0)).cpu().numpy()   # NO_ENSEMBLE: first action of the current chunk only
         try:
             ts=env.step(target); rewards.append(ts.reward)
         except Exception as e:                 # a broken policy's garbage actions can drive MuJoCo into an
@@ -113,6 +114,6 @@ for r in range(int(env_max_reward)+1):
 # machine-readable dump for third-party diffing (cert requirement)
 summary={'mode':'pristine' if os.environ.get('PRISTINE')=='1' else 'fixed','seed':SEED,'n':NUM_ROLLOUTS,
          'success_rate':sr,'avg_return':float(np.mean(returns)),'ladder_counts':ladder,'ckpt':os.path.basename(ckpt)}
-out=os.path.join(results_dir,f'results_step_{summary["mode"]}_seed{SEED}.json')
+out=os.path.join(results_dir,f'results_step_{summary["mode"]}{"_noens" if NO_ENSEMBLE else ""}_seed{SEED}.json')
 json.dump({'summary':summary,'rollouts':records}, open(out,'w'), indent=1)
 print('wrote',out)

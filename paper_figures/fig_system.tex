@@ -1,0 +1,44 @@
+% System diagram (Sec. III), drawn with the diagram-design architecture grammar: one left-to-right flow,
+% three flat zones, orthogonal rounded connectors, muted arrows, ink boxes with sans names + soft sublabels,
+% accent on the two elements the paper audits (recurrent state of step(), temporal ensembling).
+\begin{tikzpicture}[execute at begin picture=\sansmath, x=1cm, y=1cm, >={Stealth[length=1.4mm, width=1.1mm]},
+  conn/.style={draw=ddmuted, line width=0.55pt, rounded corners=2.2pt},
+  hot/.style={draw=ddaccent, line width=0.75pt, rounded corners=2.2pt},
+  box/.style={draw=ddink, line width=0.5pt, rounded corners=1.6pt, fill=white, minimum height=0.86cm,
+              align=center, inner sep=2pt, font=\sffamily\scriptsize\bfseries, text=ddink},
+  hotbox/.style={box, draw=ddaccent, line width=0.8pt, fill=ddaccent!6},
+  sum/.style={draw=ddink, line width=0.5pt, circle, fill=white, minimum size=3.4mm, inner sep=0pt, font=\sffamily\scriptsize},
+  zone/.style={draw=ddink!12, line width=0.5pt, fill=ddink!2, rounded corners=3pt},
+  zlabel/.style={font=\sffamily\scriptsize\bfseries, text=ddsoft, fill=white, inner sep=1pt, anchor=west},
+  lab/.style={font=\sffamily\scriptsize, text=ddsoft},
+  io/.style={font=\scriptsize, text=ddink}]
+\newcommand{\sub}[1]{\\[-1pt]{\mdseries\scriptsize\textcolor{ddsoft}{#1}}}
+% ---------------- zones (drawn first)
+\draw[zone] (2.0,0.2) rectangle (7.75,2.85);   \node[zlabel] at (2.15,2.85) {ENCODER, PER FRAME};
+\draw[zone] (8.15,0.2) rectangle (13.45,2.85); \node[zlabel] at (8.3,2.85) {SEQUENCE MODEL};
+\draw[zone] (13.85,0.2) rectangle (16.35,2.85); \node[zlabel] at (14.0,2.85) {EXECUTION};
+% ---------------- nodes
+\node[box, minimum width=1.45cm, minimum height=1.8cm] (env) at (0.85,1.25) {simulator\sub{ALOHA or}\sub{RMBench}};
+\node[box, minimum width=2.2cm] (dino) at (3.45,1.65) {DINOv2 ViT-L/14\sub{frozen}};
+\node[box, minimum width=1.45cm] (adp) at (5.6,1.65) {adapter\sub{3 conv $\to$ 2048}};
+\node[box, minimum width=1.45cm, minimum height=0.74cm] (phi) at (5.6,0.72) {state MLP $\phi$\sub{14-D $\to$ 2048}};
+\node[box, minimum width=0.95cm, minimum height=0.6cm, font=\sffamily\scriptsize\bfseries] (fus) at (7.1,1.65) {add\\[-1pt]+ LN};
+\node[box, minimum width=2.75cm] (mamba) at (9.75,1.65) {4$\times$ Mamba-2 blocks\sub{full episode history}};
+\node[box, minimum width=1.85cm] (head) at (12.45,1.65) {action head\sub{chunk $16\times14$}};
+\node[hotbox, minimum width=2.1cm] (te) at (15.1,1.65) {temporal ens.\sub{weighted action mean}};
+% ---------------- connectors
+\draw[conn,->] (env.east |- dino) -- node[above, lab, pos=0.45]{$I_t$} (dino.west);
+\draw[conn,->] (env.east |- phi) -- node[above, lab, pos=0.25]{$s_t$} (phi.west);
+\draw[conn,->] (dino.east) -- (adp.west);
+\draw[conn,->] (adp.east) -- (fus.west);
+\draw[conn,->] (phi.east) -| node[right, lab, pos=0.75]{$W$} (fus.south);
+\draw[conn,->] (fus.east) -- (mamba.west);
+\node[lab, anchor=south, inner sep=1.5pt] at (7.95,1.65) {$z_t$};   % in the white gap between the two zones
+\draw[conn,->] (mamba.east) -- (head.west);
+\draw[conn,->] (head.east) -- (te.west);
+\draw[conn,->] (te.east) -- (16.75,1.65) |- node[below, lab, pos=0.75]{executed action $a_t$} (0.85,0.0) -- (env.south);
+% recurrent state of step(): self-loop on the Mamba stack (accent)
+\draw[hot,->] ([xshift=9mm]mamba.north) -- ++(0,0.3) -| ([xshift=-9mm]mamba.north);
+\node[font=\sffamily\scriptsize, text=ddaccent, anchor=south west, align=left, inner sep=1pt] at (10.75,2.13) {rollout: \texttt{step()}\\[-1pt]state $S_{t-1}\!\to\! S_t$};
+\node[lab, anchor=north, align=center] at (9.75,1.15) {main training: parallel scan\\[-1pt]over the episode};
+\end{tikzpicture}
